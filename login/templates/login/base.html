@@ -1,4 +1,5 @@
 {% load staticfiles %}
+<!-- 通过页面顶端的{% load staticfiles %}加载后，才可以使用static方法；-->
 <!DOCTYPE html>
 <html lang="zh-CN">
   <head>
@@ -7,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
     <title>{% block title %}base{% endblock %}</title>
+  <!--设置了一个动态的页面title块；-->
 
     <!-- Bootstrap -->
     <link href="{% static 'bootstrap-3.3.7-dist/css/bootstrap.min.css' %}" rel="stylesheet">
@@ -17,7 +19,10 @@
       <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+
       {% block css %}{% endblock %}
+      <!--  设置了一个动态的css加载块，防止后面有页面直接引用自定义css来定义页面，留下接口-->
+
   </head>
   <body>
     <nav class="navbar navbar-default">
@@ -55,11 +60,13 @@
 
           </ul>
         </div><!-- /.navbar-collapse -->
+
       </div><!-- /.container-fluid -->
     </nav>
+<!-- 以上都是最上面的导航栏的内容，下面content是一个作为具体页面的主体内容留下接口，后面页面继承时候可以随意修改 -->
     {% block content %}{% endblock %}
 
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <!--  其中% static的内容-将样式文件指向了我们的实际静态文件，下面的js脚本也是同样的道理。-->
     <script src="{% static 'js/jquery-3.1.1.js' %}"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="{% static 'bootstrap-3.3.7-dist/js/bootstrap.min.js' %}"></script>

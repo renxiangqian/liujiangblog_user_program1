@@ -3,15 +3,21 @@
 {% block content %}
     <div class="container">
         <div class="col-md-4 col-md-offset-4">
+            <!--这里的action="/register/就是当submit和提交时候——去views里面找register函数-->
           <form class='form-register' action="/register/" method="post">
 
               {% if message %}
+              <!--通过if判断是否有消息；然后再全段的这个div里面显示views里面反馈定义数据，
+              这里的alert alert-warning只需要在bootstrap.css里面搜索alert-warning关键字就可以，alert是一个插件名字后面是具体的方法名字-->
                   <div class="alert alert-warning">{{ message }}</div>
               {% endif %}
 
               {% csrf_token %}
+              <!--使用POST的方法时，必须添加{% csrf_token %}标签，用于处理csrf安全机制；-->
 
               <h2 class="text-center">欢迎注册</h2>
+              <!--这里form-group的div是在bootstrap.css里面定义的css规则，然后login_form是在views里面定义的方法，.
+              第一个里面register_form是views定义方法，label_tag这是在froms里面定义的label名字属性。第二个username属性就是(分别是注册时候信息)-->
               <div class="form-group">
                   {{ register_form.username.label_tag }}
                   {{ register_form.username}}

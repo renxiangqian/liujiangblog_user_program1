@@ -25,7 +25,7 @@ def send_email(email, code):
 
     text_content = '''感谢注册www.liujiangblog.com，这里是刘江的博客和教程站点，专注于Python和Django技术的分享！\
                     如果你看到这条消息，说明你的邮箱服务器不提供HTML链接功能，请联系管理员！'''
-
+#这个链接里面是href是原链接到一个网址http://127.0.0.1:8000（这个地址需要是一个外网地址，否则外网不能用）/confirm（进入url然后进入view）/?code={}"和code的具体数值
     html_content = '''
                     <p>感谢注册<a href="http://{}/confirm/?code={}" target=blank>www.liujiangblog.com</a>，\
                     这里是刘江的博客和教程站点，专注于Python和Django技术的分享！</p>
@@ -47,7 +47,6 @@ def hash_code(s, salt='mysite'):# 加点盐，rxq，gjh
 def index(request):
     pass
     return render(request, 'login/index.html')
-
 # def login(request):
 #     if request.session.get('is_login',None):
 #         return redirect("/index/")
@@ -86,11 +85,16 @@ def index(request):
 #     # return render(request, 'login/login.html')
 def login(request):
     if request.session.get('is_login', None):
+#通过下面的if语句，我们不允许重复登录：这里应该登录的话-就返回到index页面不让重复登录。
         return redirect("/index/")
+
     if request.method == "POST":
         login_form = forms.UserForm(request.POST)
         message = "请检查填写的内容！"
+# message在login前端显示1，先检测验证码是否错误，错误会提示检查填写的内容2，如果验证码正确判断用户是否正确-错误用户不存在3，密码错误4，没有通过邮件
         if login_form.is_valid():
+#每个Django表单的实例都有一个内置的is_valid()方法，用来验证接收的数据是否合法。如果所有数据都合法，那么该方法将返回True，
+# 并将所有的表单数据转存到它的一个叫做cleaned_data的属性中，该属性是以个字典类型数据。# cleaned_data就是读取表单返回的值，返回类型为字典dict型，这里就是取的为数据库里面username
             username = login_form.cleaned_data['username']
             password = login_form.cleaned_data['password']
             try:
@@ -98,6 +102,7 @@ def login(request):
                 if not user.has_confirmed:
                     message = "该用户还未通过邮件确认！"
                     return render(request, 'login/login.html', locals())
+
                 if user.password == hash_code(password):  # 哈希值和数据库内的值进行比对
                     request.session['is_login'] = True
                     request.session['user_id'] = user.id
@@ -108,7 +113,7 @@ def login(request):
             except:
                 message = "用户不存在！"
         return render(request, 'login/login.html', locals())
-
+#这里默认得有这个方法吧，如果没有这个会报错。
     login_form = forms.UserForm()
     return render(request, 'login/login.html', locals())
 
@@ -118,6 +123,7 @@ def register(request):
         return redirect("/index/")
     if request.method == "POST":
         register_form = forms.RegisterForm(request.POST)
+# message在login前端显示0，如果邮箱不合符格式不能提交renxiangqian@，并提示检查填写的内容。1，先检测验证码是否错误，并提示检查填写的内容。2，如果用户名存在提示已存在3，邮箱重复
         message = "请检查填写的内容！"
         if register_form.is_valid():  # 获取数据
             username = register_form.cleaned_data['username']
@@ -138,7 +144,7 @@ def register(request):
                     message = '该邮箱地址已被注册，请使用别的邮箱！'
                     return render(request, 'login/register.html', locals())
 
-                # 当一切都OK的情况下，创建新用户
+                # 当一切都OK的情况下，创建新用户，数据里面name=网页里面username
 
                 new_user = models.User()
                 new_user.name = username
@@ -149,6 +155,7 @@ def register(request):
 
                 code = make_confirm_string(new_user)
                 send_email(email, code)
+                #调用send_email函数给邮箱发送邮件，然后必须去验证才能登陆。
 
                 message = '请前往注册邮箱，进行邮件确认！'
                 return render(request, 'login/confirm.html', locals())  # 跳转到等待邮件确认页面。
@@ -160,11 +167,13 @@ def logout(request):
         # 如果本来就未登录，也就没有登出一说
         return redirect("/index/")
     request.session.flush()
+    #flush()方法是比较安全的一种做法，而且一次性将session中的所有内容全部清空，确保不留后患。
     # 或者使用下面的方法
     # del request.session['is_login']
     # del request.session['user_id']
     # del request.session['user_name']
     return redirect("/index/")
+#当邮件链接被点击之后才会访问址http://127.0.0.1:8000（这个地址需要是一个外网地址，否则外网不能用）/confirm（进入url然后进入view）/?code={}"和code的具体数值，进入这个函数
 
 def user_confirm(request):
     code = request.GET.get('code', None)
