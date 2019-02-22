@@ -25,7 +25,7 @@ def send_email(email, code):
 
     text_content = '''感谢注册www.liujiangblog.com，这里是刘江的博客和教程站点，专注于Python和Django技术的分享！\
                     如果你看到这条消息，说明你的邮箱服务器不提供HTML链接功能，请联系管理员！'''
-#这个链接里面是href是原链接到一个网址http://127.0.0.1:8000（这个地址需要是一个外网地址，否则外网不能用）/confirm（进入url然后进入view）/?code={}"和code的具体数值
+#20190222这个链接里面是href是原链接到一个网址http://127.0.0.1:8000（这个地址需要是一个外网地址，否则外网不能用）/confirm（进入url然后进入view）/?code={}"和code的具体数值
     html_content = '''
                     <p>感谢注册<a href="http://{}/confirm/?code={}" target=blank>www.liujiangblog.com</a>，\
                     这里是刘江的博客和教程站点，专注于Python和Django技术的分享！</p>
